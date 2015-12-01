@@ -49,12 +49,12 @@ class Importer {
 				'f_code'          => $row[7],
 				'country_id'      => $row[8],
 				'cc2'             => $row[9],
-				'admin1'          => $row[10],
-				'admin2'          => $row[11],
-				'admin3'          => $row[12],
-				'admin4'          => $row[13],
+				'admin1'          => $row[10]?:null,
+				'admin2'          => $row[11]?:null,
+				'admin3'          => $row[12]?:null,
+				'admin4'          => $row[13]?:null,
 				'population'      => $row[14],
-				'elevation'       => $row[15]? $row[15]:null,
+				'elevation'       => $row[15]?:null,
 				'gtopo30'         => $row[16],
 				'timezone_id'     => $row[17],
 				'modification_at' => $row[18],
@@ -86,7 +86,7 @@ class Importer {
 				'fips_code'            => $row[3],
 				'name'                 => $row[4],
 				'capital'              => $row[5],
-				'area'                 => $row[6]? $row[6]:null,
+				'area'                 => $row[6]?:null,
 				'population'           => $row[7],
 				'continent_id'         => $row[8],
 				'tld'                  => $row[9],
@@ -96,7 +96,7 @@ class Importer {
 				'postal_code_format'   => $row[13],
 				'postal_code_regex'    => $row[14],
 				'languages'            => $row[15],
-				'name_id'              => $row[16]? $row[16]:null,
+				'name_id'              => $row[16]?:null,
 				'neighbours'           => $row[17],
 				'equivalent_fips_code' => $row[18],
 			);
@@ -314,7 +314,7 @@ class Importer {
 	 * Parse a given file and return the CSV lines as an array.
 	 *
 	 * @param  string     $path
-	 * @param  \Clousure  $callback
+	 * @param  \Closure  $callback
 	 * @return void
 	 */
 	protected function parseFile($path, $callback)
@@ -332,10 +332,10 @@ class Importer {
 			// ignore empty lines and comments
 			if ( ! $line or $line === '' or strpos($line, '#') === 0) continue;
 
-			// our CSV is <TAB> separated so we only need to conver it to an array
+			// our CSV is <TAB> separated so we only need to convert it to an array
 			$line = explode("\t", $line);
 
-			// finally run our clousure with the line
+			// finally run our closure with the line
 			$callback($line);
 		}
 

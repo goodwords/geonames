@@ -17,6 +17,7 @@
     "require": {
         "php": ">=5.5.9",
         "ext-zip": "*",
+        "ext-curl": "*",
         "illuminate/config": ">=5.1.0",
         "illuminate/console": ">=5.1.0",
         "illuminate/database": ">=5.1.0",

@@ -8,7 +8,7 @@ return array(
 
 		'files' => array(
 			'countries' => 'http://download.geonames.org/export/dump/countryInfo.txt',
-			'names'     => 'http://download.geonames.org/export/dump/allCountries.zip',
+			// TODO Optional.
 			'alternate' => 'http://download.geonames.org/export/dump/alternateNames.zip',
 			'hierarchy' => 'http://download.geonames.org/export/dump/hierarchy.zip',
 			'admin1'    => 'http://download.geonames.org/export/dump/admin1CodesASCII.txt',
@@ -16,8 +16,6 @@ return array(
 			'feature'   => 'http://download.geonames.org/export/dump/featureCodes_en.txt',
 			'timezones' => 'http://download.geonames.org/export/dump/timeZones.txt',
 		),
-
-		'development' => 'http://download.geonames.org/export/dump/cities15000.zip',
 
 		'wildcard' => 'http://download.geonames.org/export/dump/%s.zip',
 	),

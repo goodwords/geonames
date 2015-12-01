@@ -10,8 +10,9 @@ class NamesTableSeeder extends DatabaseSeeder {
 	public function run()
 	{
 		$path = $this->command->option('path');
+		$file = $this->command->option('file');
 
-		$this->importer->names('geonames_names', $path . '/allCountries.txt');
+		$this->importer->names('geonames_names', $path . '/' . $file . '.txt');
 	}
 
 }

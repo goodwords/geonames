@@ -28,7 +28,7 @@ class SeedCommand extends IlluminateSeedCommand {
 	protected function getOptions()
 	{
 		return array_merge(array(
-			array('country', null, InputOption::VALUE_REQUIRED, 'Seed a specific country instead.'),
+			array('file', null, InputOption::VALUE_REQUIRED, 'Seed a specific file instead (if supported).'),
 			array('path', null, InputOption::VALUE_REQUIRED, 'Path where files are located.'),
 		), parent::getOptions());
 	}

@@ -80,21 +80,17 @@ class ImportCommand extends Command {
 	 */
 	public function fire()
 	{
-		$country     = $this->input->getOption('country');
-		$development = $this->input->getOption('development');
-		$fetchOnly   = $this->input->getOption('fetch-only');
-		$wipeFiles   = $this->input->getOption('wipe-files');
+		$names = $this->argument('names');
 
-		// i'm sorry but you can't have both :(
-		if ($development and ! is_null($country)) {
-			throw new RuntimeException("You have to select between a country or a development version of GeoNames.");
+		// Default choice.
+		if (empty($names)) {
+			$names = array('cities15000');
 		}
 
-		// set a development names, lighter download
-		$development and $this->setDevelopment();
+		$fetchOnly = $this->input->getOption('fetch-only');
+		$wipeFiles = $this->input->getOption('wipe-files');
 
-		// set a specific country names
-		$country and $this->setCountry($country);
+		$this->setNames($names);
 
 		// path to download our files
 		$path = $this->getPath();
@@ -147,17 +143,12 @@ class ImportCommand extends Command {
 		$this->seedCommand('FeaturesTableSeeder');
 		$this->seedCommand('TimezonesTableSeeder');
 
-		// depending if we run a country, development or plain names we will run
-		// different seeders. Note that the langauge codes file is only
-		// available with the allCountries.zip file.
-		if ($development) {
-			$this->seedCommand('DevelopmentNamesTableSeeder');
-		} elseif ($country) {
-			$this->seedCommand('CountryNamesTableSeeder', '--country=' . $country);
-		} else {
-			$this->seedCommand('AlternateNamesTableSeeder');
-			$this->seedCommand('LanguageCodesTableSeeder');
-			$this->seedCommand('NamesTableSeeder');
+		// TODO Specify an option.
+//		$this->seedCommand('AlternateNamesTableSeeder');
+		$this->seedCommand('LanguageCodesTableSeeder');
+
+		foreach ($names as $nameFile) {
+			$this->seedCommand('NamesTableSeeder', '--file=' . $nameFile);
 		}
 	}
 
@@ -174,7 +165,7 @@ class ImportCommand extends Command {
 			throw new RuntimeException('Impossible to write to path: ' . $path);
 		}
 
-		// curl looks like shit but whatever
+		// It's shit. Guzzle should be used instead.
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_FILE, $fp);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -264,7 +255,7 @@ class ImportCommand extends Command {
 		$process->run();
 
 		if ( ! $process->isSuccessful()) {
-			throw new \RuntimeException($process->getErrorOutput());
+			throw new \RuntimeException($process->getOutput());
 		}
 
 		return $process;
@@ -290,34 +281,18 @@ class ImportCommand extends Command {
 		return $this->config['files'];
 	}
 
-		/**
-	 * Sets the names file for a ligher version for development. We also ignore
-	 * the alternate names.
-	 *
-	 * @return void
-	 */
-	protected function setDevelopment()
+	protected function setNames($names)
 	{
-		$this->config['files']['names'] = $this->config['development'];
-
-		unset($this->config['files']['alternate']);
+		foreach ($names as $name) {
+			$this->config['files'][] = sprintf($this->config['wildcard'], $name);
+		}
 	}
 
-	/**
-	 * Sets the name file to a specific country.
-	 *
-	 * @param  string $country
-	 * @return void
-	 */
-	protected function setCountry($country)
+	public function getArguments()
 	{
-		if (strlen($country) > 2) {
-			throw new RuntimeException('Country format must be in ISO Alpha 2 code.');
-		}
-
-		$this->config['files']['names'] = sprintf($this->config['wildcard'], strtoupper($country));
-
-		unset($this->config['files']['alternate']);
+		return array(
+			array('names', InputArgument::IS_ARRAY, "'geoname' data files, like: RU, cities1000,.. (you can specify many)."),
+		);
 	}
 
 	/**
@@ -328,8 +303,6 @@ class ImportCommand extends Command {
 	protected function getOptions()
 	{
 		return array(
-			array('country', null, InputOption::VALUE_REQUIRED, 'Downloads just the specific country.'),
-			array('development', null, InputOption::VALUE_NONE, 'Downloads an smaller version of names (~10MB).'),
 			array('fetch-only', null, InputOption::VALUE_NONE, 'Just download the files.'),
 			array('wipe-files', null, InputOption::VALUE_NONE, 'Wipe old downloaded files and fetch new ones.'),
 		);
