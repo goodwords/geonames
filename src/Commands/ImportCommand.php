@@ -222,7 +222,7 @@ class ImportCommand extends Command {
 	 */
 	protected function seedCommand($class, $extra = '')
 	{
-		$string = 'php artisan geonames:seed --class="Ipalaus\Geonames\Seeders\%s" --path="%s" ' . $extra;
+		$string = 'php artisan geonames:seed --force --class="Ipalaus\Geonames\Seeders\%s" --path="%s" ' . $extra;
 
 		$command = sprintf($string, $class, $this->getPath());
 
